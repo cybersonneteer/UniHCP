@@ -16,7 +16,11 @@ import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
 
-from torch._six import string_classes
+try:
+    from torch._six import string_classes
+except ImportError:
+    string_classes = (str,)
+
 from torch.utils.data import DataLoader
 from core.data.datasets.images.seg_dataset_dev import Instances
 from core.data.transforms.pose_transforms import DataContainer
