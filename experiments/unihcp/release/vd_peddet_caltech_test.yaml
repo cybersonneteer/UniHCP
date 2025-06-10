@@ -23,7 +23,6 @@ tasks:
         task_spec:
           img_folder: '/content/UniHCP/core/data/datasets/images'
           ann_file: '/content/UniHCP/core/data/datasets/images/resources/CHval.odgt'
-/CHval.odgt
 
           return_masks: False
         augmentation: {'max_size': 1333}
