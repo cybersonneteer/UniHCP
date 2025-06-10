@@ -1,5 +1,5 @@
 common:
-  max_iter: 1000             # 📌 Add here under common
+  max_iter: 1000             #  Add here under common
   backbone:
     kwargs:
       test_pos_mode: learnable_interpolate
