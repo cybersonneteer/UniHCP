@@ -1,5 +1,9 @@
 import torch
-from torch._six import inf
+try:
+    from torch._six import inf
+except ImportError:
+    inf = float("inf")
+
 
 from .utils import iter_params
 
