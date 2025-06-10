@@ -23,6 +23,9 @@ from core import distributed_utils as dist
 from pycocotools.coco import COCO
 
 from collections import defaultdict
+from pycocotools import mask as coco_mask
+
+
 
 __all__ = ['PedestrainDetectionDataset']
 
@@ -235,7 +238,7 @@ class CocoDetection(data.Dataset):
 def coco_merge(
     img_root_list: List[str], input_list: List[str],
     indent: Optional[int] = None,
-) -> str:
+) -> Dict:
     """
         Merge multiple COCO-style or ODGT annotation files into a single COCO-style dictionary.
 
@@ -261,6 +264,10 @@ def coco_merge(
 
                 ann_id = 0
                 for i, entry in enumerate(raw_data):
+                    if not isinstance(entry, dict):
+                        print(f" Skipping malformed entry at index {i}: expected dict, got {type(entry)}")
+                        continue
+
                     image = {
                         "file_name": entry["ID"] + ".jpg",
                         "height": entry.get("height", 1080),
