@@ -232,25 +232,64 @@ class CocoDetection(data.Dataset):
         fmt_str += '{0}{1}'.format(tmp, self.target_transform.__repr__().replace('\n', '\n' + ' ' * len(tmp)))
         return fmt_str
 
-
 def coco_merge(
     img_root_list: List[str], input_list: List[str],
     indent: Optional[int] = None,
 ) -> str:
-    """Merge COCO annotation files.
-
-    Args:
-        input_extend: Path to input file to be extended.
-        input_add: Path to input file to be added.
-        output_file : Path to output file with merged annotations.
-        indent: Argument passed to `json.dump`. See https://docs.python.org/3/library/json.html#json.dump.
     """
-    data_list = []
+        Merge multiple COCO-style or ODGT annotation files into a single COCO-style dictionary.
 
+        Args:
+            img_root_list (List[str]): List of image root directories, one for each annotation file.
+            input_list (List[str]): List of paths to annotation files (.json or .odgt).
+            indent (Optional[int]): Unused. Reserved for future output formatting.
+
+        Returns:
+            dict: A merged COCO-style annotation dictionary.
+    """
+
+    data_list = []
     for input in input_list:
         with open(input, 'r') as f:
-            data_extend = json.load(f)
+            if input.endswith('.odgt'):
+                raw_data = [json.loads(line.strip()) for line in f if line.strip()]
+
+            # Convert list of per-image dicts into COCO-style dict
+                images = []
+                annotations = []
+                categories = [{"id": 1, "name": "pedestrian"}]  # adjust if needed
+
+                ann_id = 0
+                for i, entry in enumerate(raw_data):
+                    image = {
+                        "file_name": entry["ID"] + ".jpg",
+                        "height": entry.get("height", 1080),
+                        "width": entry.get("width", 1920),
+                        "id": i
+                    }
+                    images.append(image)
+
+                    for bbox in entry["gtboxes"]:
+                        box = bbox["fbox"]
+                        annotations.append({
+                            "id": ann_id,
+                            "image_id": i,
+                            "bbox": box,
+                            "category_id": 1,
+                            "iscrowd": 0,
+                            "area": box[2] * box[3]
+                        })
+                        ann_id += 1
+
+                data_extend = {
+                    "images": images,
+                    "annotations": annotations,
+                    "categories": categories
+            }
+            else:
+                data_extend = json.load(f)
         data_list.append(data_extend)
+
 
     output= {'categories': data_list[0]['categories']}
 
