@@ -168,31 +168,42 @@ def get_local_rank():
 def get_world_size():
     return int(os.environ.get('SLURM_NTASKS', 1))
 
-def dist_init(method='slurm', port='5671'):
-    assert method == 'slurm'
-    proc_id = int(os.environ['SLURM_PROCID'])
-    num_gpus = torch.cuda.device_count()
-    torch.cuda.set_device(proc_id % num_gpus)
+def dist_init(method='single', port='5671'):
+    if method == 'slurm':
+        proc_id = int(os.environ.get('SLURM_PROCID', 0))
 
-    world_size = get_world_size()
-    rank = get_rank()
+        num_gpus = torch.cuda.device_count()
+        torch.cuda.set_device(proc_id % num_gpus)
 
-    addr = subprocess.getoutput(
-        "scontrol show hostname {} | head -n1".format(os.environ["SLURM_NODELIST"])
-    )
-    os.environ["MASTER_PORT"] = port
-    os.environ["MASTER_ADDR"] = addr
-    os.environ["WORLD_SIZE"] = str(world_size)
-    os.environ["RANK"] = str(rank)
+        world_size = get_world_size()
+        rank = get_rank()
 
+        addr = subprocess.getoutput(
+            "scontrol show hostname {} | head -n1".format(os.environ["SLURM_NODELIST"])
+        )
+        os.environ["MASTER_PORT"] = port
+        os.environ["MASTER_ADDR"] = addr
+        os.environ["WORLD_SIZE"] = str(world_size)
+        os.environ["RANK"] = str(rank)
+
+    else:
+        # Local, non-SLURM setup
+        rank = 0
+        world_size = 1
+        os.environ['MASTER_ADDR'] = 'localhost'
+        os.environ['MASTER_PORT'] = port
+        os.environ['WORLD_SIZE'] = str(world_size)
+        os.environ['RANK'] = str(rank)
+        torch.cuda.set_device(0 if torch.cuda.is_available() else -1)
 
     dist.init_process_group(
-        backend="nccl",
-        world_size=world_size,
-        rank=rank,
+        backend="nccl" if torch.cuda.is_available() else "gloo",
+        world_size=int(os.environ['WORLD_SIZE']),
+        rank=int(os.environ['RANK']),
     )
 
-    return rank, world_size
+    return int(os.environ['RANK']), int(os.environ['WORLD_SIZE'])
+
 
 
 class DistributedGivenIterationSampler(Sampler):
