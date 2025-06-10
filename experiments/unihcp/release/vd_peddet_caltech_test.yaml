@@ -16,6 +16,7 @@ common:
 tasks:
   0:
     name: CrowdHumanPeddetTest
+    max_iter: 1000
     loss_weight: 1.0 # *redundant*
     gres_ratio: 1 # int, > 0| world/sum*ratio, *redundant*
     dataset:
