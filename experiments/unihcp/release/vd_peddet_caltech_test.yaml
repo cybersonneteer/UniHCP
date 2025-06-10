@@ -1,5 +1,5 @@
-max_iter: 1000  
 common:
+  max_iter: 1000             # 📌 Add here under common
   backbone:
     kwargs:
       test_pos_mode: learnable_interpolate
@@ -7,24 +7,22 @@ common:
     type: TesterMultiTaskDev
     kwargs:
       pos_thr: 0.0
-      gt_path: '/mnt/path...to.../Caltech/test_caltech_heavy_1xnew.odgt'
-
-
+      gt_path: '/mnt/.../test_caltech_heavy_1xnew.odgt'
   sync: True
   collate: det
 
 tasks:
   0:
     name: CrowdHumanPeddetTest
-    max_iter: 1000
-    loss_weight: 1.0 # *redundant*
-    gres_ratio: 1 # int, > 0| world/sum*ratio, *redundant*
+    # no max_iter here
+    loss_weight: 1.0
+    gres_ratio: 1
     dataset:
       type: PedestrainDetectionDataset
       kwargs:
         task_spec:
-          img_folder: /mnt/path...to.../Caltech/Images
-          ann_file: /mnt/path...to.../Caltech/test_caltech_1xnew.json
+          img_folder: /mnt/.../Caltech/Images
+          ann_file: /mnt/.../test_caltech_1xnew.json
           return_masks: False
         augmentation: {'max_size': 1333}
         vit: True
