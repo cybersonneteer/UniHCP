@@ -1,6 +1,8 @@
 common:
-  max_iter: 1000             #  Add here under common
+  max_iter: 1000
+  distributed: false  # <- Added to disable distributed mode in Colab
   backbone:
+    type: vit_base_patch16  # <- REQUIRED: specify the actual backbone type (adjust if different)
     kwargs:
       test_pos_mode: learnable_interpolate
   tester:
@@ -14,7 +16,6 @@ common:
 tasks:
   0:
     name: CrowdHumanPeddetTest
-    # no max_iter here
     loss_weight: 1.0
     gres_ratio: 1
     dataset:
@@ -23,9 +24,9 @@ tasks:
         task_spec:
           img_folder: '/content/UniHCP/core/data/datasets/images'
           ann_file: '/content/UniHCP/core/data/datasets/images/resources/CHval.odgt'
-
           return_masks: False
-        augmentation: {'max_size': 1333}
+        augmentation:
+          max_size: 1333
         vit: True
         train: False
     sampler:
