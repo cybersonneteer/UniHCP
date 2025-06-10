@@ -7,7 +7,7 @@ common:
     type: TesterMultiTaskDev
     kwargs:
       pos_thr: 0.0
-      gt_path: '/mnt/.../test_caltech_heavy_1xnew.odgt'
+      gt_path: '/content/UniHCP/core/data/datasets/images/resources/CHval.odgt'
   sync: True
   collate: det
 
@@ -21,8 +21,10 @@ tasks:
       type: PedestrainDetectionDataset
       kwargs:
         task_spec:
-          img_folder: /mnt/.../Caltech/Images
-          ann_file: /mnt/.../test_caltech_1xnew.json
+          img_folder: '/content/UniHCP/core/data/datasets/images'
+          ann_file: '/content/UniHCP/core/data/datasets/images/resources/CHval.odgt'
+/CHval.odgt
+
           return_masks: False
         augmentation: {'max_size': 1333}
         vit: True
