@@ -6,8 +6,13 @@ common:
     kwargs:
       test_pos_mode: learnable_interpolate
   neck:
-      type: AIONeck         # <- REQUIRED
-      kwargs: {}            # <- Empty is OK unless your model needs specific args
+  type: SimpleNeck
+  kwargs:
+    mask_dim: 32         # Feature dim of the mask
+    bn_group: 1
+    activation: gelu
+    mask_forward: True
+
   tester:
     type: TesterMultiTaskDev
     kwargs:
