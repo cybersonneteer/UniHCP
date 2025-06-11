@@ -12,6 +12,34 @@ common:
       bn_group: 1
       activation: gelu
       mask_forward: True
+      
+  decoder:
+    type: TransformerDecoder
+    kwargs:
+      in_channels: 768                  # Match with backbone output channels
+      mask_classification: true
+      num_classes: 1                    # For pedestrian detection (1 class)
+      hidden_dim: 256
+      num_queries: 100
+      nheads: 8
+      dim_feedforward: 1024
+      dec_layers: 6
+      pre_norm: false
+      mask_dim: 32
+      enforce_input_project: false
+      mask_on: true
+      num_feature_levels: 3
+      reid_cfgs: null
+      pedattr_cfgs: null
+      peddet_cfgs: null
+      cfgs: null
+      ginfo: null
+      arch: false
+      cross_pos_embed: "sincos"
+      backbone_pose_embed: null
+      cls_out_dim: null
+      share_bbox_branch: false
+
 
   tester:
     type: TesterMultiTaskDev
