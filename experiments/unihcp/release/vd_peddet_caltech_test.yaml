@@ -5,6 +5,9 @@ common:
     type: vit_base_patch16  # <- REQUIRED: specify the actual backbone type (adjust if different)
     kwargs:
       test_pos_mode: learnable_interpolate
+    neck:
+      type: AIONeck         # <- REQUIRED
+      kwargs: {}            # <- Empty is OK unless your model needs specific args
   tester:
     type: TesterMultiTaskDev
     kwargs:
